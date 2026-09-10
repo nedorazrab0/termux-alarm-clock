@@ -98,7 +98,7 @@ def alarm(silent: bool) -> None:
     vibrate_random(64)
 
 
-def setup(minutes: int) -> None:
+def wait_for_alarm(minutes: int) -> None:
     run(["termux-wake-lock"], check=True)
     seconds = minutes*60
     notify(minutes, seconds)
