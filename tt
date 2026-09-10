@@ -39,7 +39,7 @@ class MusicPlayer:
         # Random KeyboardInterrupt protection
         if self.test_file.is_dir():
             return
-        run([self.PLAYER_CMD, "stop"], check=True)
+        run([self.PLAYER_CMD, "stop"])
         self.set_volume(self.old_volume)
         run(["termux-wake-unlock"], check=True)
         exit(0)
@@ -49,7 +49,7 @@ class MusicPlayer:
         self.check_then_stop()
 
     def set_volume(self, level: int) -> None:
-        run([self.VOLUME_CMD, self.STREAM, str(level)], check=True)
+        run([self.VOLUME_CMD, self.STREAM, str(level)])
 
     def get_volume(self, find_max: bool) -> int:
         prefix = "max_" if find_max else ""
