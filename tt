@@ -18,15 +18,17 @@ class MusicPlayer:
     PLAYER_CMD = "termux-media-player"
     VOLUME_CMD = "termux-volume"
     STREAM = "music"
-    old_volume = 0
 
     def __init__(self) -> None:
-        self.half_volume = ceil(self.get_volume(find_max=True)/2)
+        self.old_volume = 0
+        self.half_volume = ceil(self.get_volume(find_max=True) / 2)
+
         path = Path.home() / "storage" / "downloads"
         self.test_file = path / "00-termux-alarm-clock"
         self.file = path / "alarm"
+
+        self.test_file.mkdir(exist_ok=True)
         signal(SIGINT, self.check_then_stop)
-        self.test_file.mkdir()
 
     def play(self) -> None:
         self.set_volume(self.half_volume)
