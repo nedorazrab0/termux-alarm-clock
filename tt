@@ -110,7 +110,7 @@ def main() -> None:
 
     minutes = int(input("How many minutes until the alarm "))
     if minutes < 0:
-        return
+        raise ValueError
     seconds = minutes*60
     run(["termux-wake-lock"], check=True)
     notify(minutes, seconds)
