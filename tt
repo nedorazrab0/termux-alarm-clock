@@ -27,7 +27,7 @@ class MusicPlayer:
         self.test_file = path / "00-termux-alarm-clock"
         self.file = path / "alarm"
 
-        self.test_file.mkdir(exist_ok=True)
+        self.test_file.mkdir()
         signal(SIGINT, self.check_then_stop)
 
     def play(self) -> None:
