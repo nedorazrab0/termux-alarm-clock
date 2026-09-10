@@ -91,7 +91,7 @@ def notify(minutes: int, seconds: int) -> None:
 
 
 def alarm(silent: bool) -> None:
-    print("Remove", str(music.test_file))
+    print("Remove", music.test_file)
     vibrate_random(64)
     if not silent:
         music.play()
