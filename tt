@@ -31,6 +31,7 @@ class MusicPlayer:
         signal(SIGINT, self.check_then_stop)
 
     def play(self) -> None:
+        self.save_volume()
         self.set_volume(self.half_volume)
         run([self.PLAYER_CMD, "play", self.file])
 
@@ -97,6 +98,13 @@ def alarm(silent: bool) -> None:
     vibrate_random(64)
 
 
+def setup(minutes: int) -> None:
+    run(["termux-wake-lock"], check=True)
+    seconds = minutes*60
+    notify(minutes, seconds)
+    sleep(seconds)
+
+
 def main() -> None:
     parser = ArgumentParser(
         description="Termux alarm clock, requires termux-api"
@@ -111,11 +119,7 @@ def main() -> None:
     minutes = int(input("How many minutes until the alarm "))
     if minutes < 0:
         raise ValueError
-    seconds = minutes*60
-    run(["termux-wake-lock"], check=True)
-    notify(minutes, seconds)
-    sleep(seconds)
-    music.save_volume()
+    wait_for_alarm(minutes)
     alarm(silent=args.silent)
     print("Ended")
     music.stop()
