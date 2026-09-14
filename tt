@@ -41,6 +41,7 @@ class MusicPlayer:
             return
         run([self.PLAYER_CMD, "stop"])
         self.set_volume(self.old_volume)
+        run(["termux-wake-unlock"], check=True)
         exit(0)
 
     def stop(self) -> None:
@@ -118,13 +119,10 @@ def main() -> None:
     minutes = int(input("How many minutes until the alarm "))
     if minutes < 0:
         raise ValueError
-    try:
-        wait_for_alarm(minutes)
-        alarm(silent=args.silent)
-        print("Ended")
-        music.stop()
-    finally:
-        run(["termux-wake-unlock"], check=True)
+    wait_for_alarm(minutes)
+    alarm(silent=args.silent)
+    print("Ended")
+    music.stop()
 
 
 if __name__ == "__main__":
