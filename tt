@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: 0BSD
 """Termux alarm clock."""
 
+from shutil import get_terminal_size
 from time import sleep, ctime, time
 from random import choices, choice
 from subprocess import Popen, run
@@ -18,8 +19,8 @@ class MusicPlayer:
     STREAM = "music"
 
     def __init__(self) -> None:
-        self.old_volume = 0
         self.half_volume = ceil(self.get_volume(find_max=True) / 2)
+        self.old_volume = 0
 
         path = Path.home() / "storage" / "downloads"
         self.test_file = path / "00-termux-alarm-clock"
@@ -84,8 +85,9 @@ def vibrate_random(repeats: int) -> None:
 def notify(minutes: int, seconds: int) -> None:
     run(["clear"], check=True)
     run(["termux-toast", str(minutes)], check=True)
-    repeats = 12 if minutes > 99 else 16
-    for _ in range(repeats):
+    size = get_terminal_size()
+    repeats = ceil(size.columns / len(str(minutes)))
+    for _ in range(size.lines):
         print(f"{choice(punctuation)}{minutes}"*repeats)
         print(f"{minutes}{choice(punctuation)}"*repeats)
     print("\nThe alarm is set on", ctime())
