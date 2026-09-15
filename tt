@@ -86,7 +86,7 @@ def notify(minutes: int, seconds: int) -> None:
     run(["clear"], check=True)
     run(["termux-toast", str(minutes)], check=True)
     terminal_size = get_terminal_size()
-    chunk_size = len(str(minutes))) + 1
+    chunk_size = len(str(minutes)) + 1
     repeats = ceil(terminal_size.columns / chunk_size / 2)
     for _ in range(terminal_size.lines):
         print(f"{choice(punctuation)}{minutes}"*repeats)
