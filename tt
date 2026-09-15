@@ -85,9 +85,10 @@ def vibrate_random(repeats: int) -> None:
 def notify(minutes: int, seconds: int) -> None:
     run(["clear"], check=True)
     run(["termux-toast", str(minutes)], check=True)
-    size = get_terminal_size()
-    repeats = ceil(size.columns / len(str(minutes)))
-    for _ in range(size.lines):
+    terminal_size = get_terminal_size()
+    chunk_size = len(str(minutes))) + 1
+    repeats = ceil(terminal_size.columns / chunk_size / 2)
+    for _ in range(terminal_size.lines):
         print(f"{choice(punctuation)}{minutes}"*repeats)
         print(f"{minutes}{choice(punctuation)}"*repeats)
     print("\nThe alarm is set on", ctime())
