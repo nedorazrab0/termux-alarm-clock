@@ -2,16 +2,14 @@
 # SPDX-License-Identifier: 0BSD
 """Termux alarm clock."""
 
-from argparse import ArgumentParser
 from time import sleep, ctime, time
 from random import choices, choice
+from subprocess import Popen, run
 from signal import SIGINT, signal
 from string import punctuation
-from subprocess import run
 from pathlib import Path
 from json import loads
 from math import ceil
-from sys import exit
 
 
 class MusicPlayer:
@@ -25,27 +23,32 @@ class MusicPlayer:
 
         path = Path.home() / "storage" / "downloads"
         self.test_file = path / "00-termux-alarm-clock"
-        self.file = path / "alarm"
+        self.file = path / "alarm.ogg"
+        if not self.file.exists():
+            raise FileNotFoundError(f"Place your music file at {self.file}")
 
+        # Random KeyboardInterrupt protection
         self.test_file.mkdir()
         signal(SIGINT, self.check_then_stop)
 
     def play(self) -> None:
+        if not self.test_file.is_dir():
+            return
         self.save_volume()
         self.set_volume(self.half_volume)
         run([self.PLAYER_CMD, "play", self.file])
 
     def check_then_stop(self, signum: int = 0, frame: None = None) -> None:
-        # Random KeyboardInterrupt protection
         if self.test_file.is_dir():
             return
         run([self.PLAYER_CMD, "stop"])
         self.set_volume(self.old_volume)
-        run(["termux-wake-unlock"], check=True)
-        exit(0)
 
     def stop(self) -> None:
-        self.test_file.rmdir()
+        try:
+            self.test_file.rmdir()
+        except FileNotFoundError:
+            pass
         self.check_then_stop()
 
     def set_volume(self, level: int) -> None:
@@ -68,8 +71,7 @@ music = MusicPlayer()
 
 
 def vibrate(duration: int) -> None:
-    music.check_then_stop()
-    run(["termux-vibrate", "-f", "-d", str(duration)])
+    Popen(["termux-vibrate", "-f", "-d", str(duration)])
 
 
 def vibrate_random(repeats: int) -> None:
@@ -90,39 +92,30 @@ def notify(minutes: int, seconds: int) -> None:
     print("Wake up on", ctime(time() + seconds), "\n")
 
 
-def alarm(silent: bool) -> None:
-    print("Remove", music.test_file)
+def alarm() -> None:
+    print("Wake up")
     vibrate_random(64)
-    if not silent:
-        music.play()
+    music.play()
     vibrate_random(64)
 
 
 def wait_for_alarm(minutes: int) -> None:
-    run(["termux-wake-lock"], check=True)
     seconds = minutes*60
     notify(minutes, seconds)
     sleep(seconds)
 
 
 def main() -> None:
-    parser = ArgumentParser(
-        description="Termux alarm clock, requires termux-api"
-    )
-    parser.add_argument(
-        "-s", "--silent", action="store_true", help="Do not play music"
-    )
-    args = parser.parse_args()
-    if not music.file.exists():
-        raise FileNotFoundError(f"Place your music file at {music.file}")
-
     minutes = int(input("How many minutes until the alarm "))
     if minutes < 0:
         raise ValueError
-    wait_for_alarm(minutes)
-    alarm(silent=args.silent)
-    print("Ended")
-    music.stop()
+    run(["termux-wake-lock"], check=True)
+    try:
+        wait_for_alarm(minutes)
+        alarm()
+        music.stop()
+    finally:
+        run(["termux-wake-unlock"], check=True)
 
 
 if __name__ == "__main__":
