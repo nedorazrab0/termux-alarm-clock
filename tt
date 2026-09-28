@@ -27,10 +27,8 @@ class MusicPlayer:
         self.file = path / "alarm.ogg"
         if not self.file.exists():
             raise FileNotFoundError(f"Place your music file at {self.file}")
-
         # Random KeyboardInterrupt protection
         self.test_file.mkdir()
-        signal(SIGINT, self.check_then_stop)
 
     def play(self) -> None:
         if not self.test_file.is_dir():
@@ -57,8 +55,10 @@ class MusicPlayer:
 
     def get_volume(self, find_max: bool) -> int:
         prefix = "max_" if find_max else ""
-        volume_data = run([self.VOLUME_CMD], capture_output=True, text=True)
-        streams = loads(volume_data.stdout)
+        data = run([self.VOLUME_CMD], capture_output=True, text=True).stdout
+        if not data:
+            return 0
+        streams = loads(data)
         for stream in streams:
             if stream["stream"] == self.STREAM:
                 return stream[prefix + "volume"]
@@ -69,6 +69,7 @@ class MusicPlayer:
 
 
 music = MusicPlayer()
+signal(SIGINT, music.check_then_stop)
 
 
 def vibrate(duration: int) -> None:
