@@ -2,74 +2,46 @@
 # SPDX-License-Identifier: 0BSD
 """Termux alarm clock."""
 
-from shutil import get_terminal_size
+from signal import SIG_IGN, SIGINT, signal
 from time import sleep, ctime, time
-from random import choices, choice
 from subprocess import Popen, run
-from signal import SIGINT, signal
-from string import punctuation
+from random import choices
 from pathlib import Path
-from json import loads
-from math import ceil
+from os import getpid
 
 
 class MusicPlayer:
     PLAYER_CMD = "termux-media-player"
-    VOLUME_CMD = "termux-volume"
-    STREAM = "music"
 
     def __init__(self) -> None:
-        self.half_volume = ceil(self.get_volume(find_max=True) / 2)
-        self.old_volume = 0
-
         path = Path.home() / "storage" / "downloads"
-        self.test_file = path / "00-termux-alarm-clock"
+        self.test_dir = path / "00-termux-alarm-clock"
         self.file = path / "alarm.ogg"
+        self.volume_changed = False
+
         if not self.file.exists():
             raise FileNotFoundError(f"Place your music file at {self.file}")
         # Random KeyboardInterrupt protection
-        self.test_file.mkdir()
+        self.test_dir.mkdir(exist_ok=True)
 
     def play(self) -> None:
-        if not self.test_file.is_dir():
+        if not self.test_dir.is_dir():
             return
-        self.save_volume()
-        self.set_volume(self.half_volume)
+        self.volume(8)
         run([self.PLAYER_CMD, "play", self.file])
 
-    def check_then_stop(self, signum: int = 0, frame: None = None) -> None:
-        if self.test_file.is_dir():
-            return
-        run([self.PLAYER_CMD, "stop"])
-        self.set_volume(self.old_volume)
-
     def stop(self) -> None:
-        try:
-            self.test_file.rmdir()
-        except FileNotFoundError:
-            pass
-        self.check_then_stop()
+        if self.volume_changed:
+            self.volume(0)
+        run([self.PLAYER_CMD, "stop"])
 
-    def set_volume(self, level: int) -> None:
-        run([self.VOLUME_CMD, self.STREAM, str(level)])
-
-    def get_volume(self, find_max: bool) -> int:
-        prefix = "max_" if find_max else ""
-        data = run([self.VOLUME_CMD], capture_output=True, text=True).stdout
-        if not data:
-            return 0
-        streams = loads(data)
-        for stream in streams:
-            if stream["stream"] == self.STREAM:
-                return stream[prefix + "volume"]
-        return 0
-
-    def save_volume(self) -> None:
-        self.old_volume = self.get_volume(find_max=False)
+    def volume(self, level: int) -> None:
+        self.volume_changed = True
+        run(["termux-volume", "music", str(level)])
 
 
+signal(SIGINT, SIG_IGN)
 music = MusicPlayer()
-signal(SIGINT, music.check_then_stop)
 
 
 def vibrate(duration: int) -> None:
@@ -77,23 +49,19 @@ def vibrate(duration: int) -> None:
 
 
 def vibrate_random(repeats: int) -> None:
-    pattern = choices(range(100, 901, 200), k=repeats)
-    for duration in pattern:
+    durations = choices(range(100, 901, 200), k=repeats)
+    for duration in durations:
         vibrate(duration)
         sleep(duration/1000 + 0.2)
 
 
 def notify(minutes: int, seconds: int) -> None:
-    run(["clear"], check=True)
-    run(["termux-toast", str(minutes)], check=True)
-    terminal_size = get_terminal_size()
-    chunk_size = len(str(minutes)) + 1
-    repeats = ceil(terminal_size.columns / chunk_size / 2)
-    for _ in range(terminal_size.lines):
-        print(f"{choice(punctuation)}{minutes}"*repeats)
-        print(f"{minutes}{choice(punctuation)}"*repeats)
-    print("\nThe alarm is set on", ctime())
-    print("Wake up on", ctime(time() + seconds), "\n")
+    run(["termux-dialog", "confirm", "-t", str(minutes)], check=True)
+    print("\033[2J\033[H")
+    print(f"{minutes} min " * 4)
+    print(ctime(time() + seconds))
+    print("PID: " + str(getpid()))
+    vibrate(900)
 
 
 def alarm() -> None:
@@ -103,23 +71,19 @@ def alarm() -> None:
     vibrate_random(64)
 
 
-def wait_for_alarm(minutes: int) -> None:
-    seconds = minutes*60
-    notify(minutes, seconds)
-    sleep(seconds)
-
-
 def main() -> None:
     minutes = int(input("How many minutes until the alarm "))
-    if minutes < 0:
+    if minutes < 0 or minutes > 540:
         raise ValueError
+    seconds = minutes*60
     run(["termux-wake-lock"], check=True)
     try:
-        wait_for_alarm(minutes)
+        notify(minutes, seconds)
+        sleep(seconds)
         alarm()
         music.stop()
     finally:
-        run(["termux-wake-unlock"], check=True)
+        run(["termux-wake-unlock"])
 
 
 if __name__ == "__main__":
