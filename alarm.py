@@ -29,7 +29,7 @@ class MusicPlayer:
             return
         text = "The volume has changed"
         run(["termux-notification-remove", text])
-        run(["termux-notification", "-c", text, "-i", text])
+        run(["termux-notification", "-c", text, "-i", text, "--on-delete", " ".join(self.STOP_CMD)])
         sleep(1)
         self.volume(8)
         run([self.PLAYER_CMD, "play", self.file])
