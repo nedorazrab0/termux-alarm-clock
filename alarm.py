@@ -34,8 +34,7 @@ class MusicPlayer:
                 "termux-notification",
                 "-t", text, 
                 "-i", text,
-                "--on-delete",
-                " ".join(self.STOP_CMD)
+                "--on-delete", " ".join(self.STOP_CMD)
             ]
         )
         self.volume(8)
