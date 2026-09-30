@@ -17,7 +17,6 @@ class MusicPlayer:
         path = Path.home() / "storage" / "downloads"
         self.test_dir = path / "00-termux-alarm-clock"
         self.file = path / "alarm.ogg"
-        self.volume_changed = False
 
         if not self.file.exists():
             raise FileNotFoundError(f"Place your music file at {self.file}")
@@ -31,12 +30,9 @@ class MusicPlayer:
         run([self.PLAYER_CMD, "play", self.file])
 
     def stop(self) -> None:
-        if self.volume_changed:
-            self.volume(0)
         run([self.PLAYER_CMD, "stop"])
 
     def volume(self, level: int) -> None:
-        self.volume_changed = True
         run(["termux-volume", "music", str(level)])
 
 
@@ -60,7 +56,7 @@ def notify(minutes: int, seconds: int) -> None:
     print("\033[2J\033[H")
     print(f"{minutes} min " * 4)
     print(ctime(time() + seconds))
-    print("PID: " + str(getpid()))
+    print(f"PID: {getpid()}")
     vibrate(900)
 
 
