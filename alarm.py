@@ -31,7 +31,7 @@ class MusicPlayer:
         run(["termux-notification-remove", text])
         run(
             [
-                "termux-notification", "-c", text, 
+                "termux-notification", "-t", text, 
                 "-i", text, "--on-delete", " ".join(self.STOP_CMD)
             ]
         )
@@ -40,7 +40,7 @@ class MusicPlayer:
         run([self.PLAYER_CMD, "play", self.file])
 
     def stop(self) -> None:
-        run([self.PLAYER_CMD, "stop"])
+        run([self.STOP_CMD)
 
     def volume(self, level: int) -> None:
         run(["termux-volume", "music", str(level)])
