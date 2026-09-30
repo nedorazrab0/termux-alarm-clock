@@ -39,7 +39,7 @@ class MusicPlayer:
         run([self.PLAYER_CMD, "play", self.file])
 
     def stop(self) -> None:
-        run([self.STOP_CMD)
+        run(self.STOP_CMD)
 
     def volume(self, level: int) -> None:
         run(["termux-volume", "music", str(level)])
