@@ -31,8 +31,11 @@ class MusicPlayer:
         run(["termux-notification-remove", text])
         run(
             [
-                "termux-notification", "-t", text, 
-                "-i", text, "--on-delete", " ".join(self.STOP_CMD)
+                "termux-notification",
+                "-t", text, 
+                "-i", text,
+                "--on-delete",
+                " ".join(self.STOP_CMD)
             ]
         )
         self.volume(8)
