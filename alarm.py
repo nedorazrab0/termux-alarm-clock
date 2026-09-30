@@ -12,6 +12,7 @@ from os import getpid
 
 class MusicPlayer:
     PLAYER_CMD = "termux-media-player"
+    STOP_CMD = ["PLAYER_CMD", "stop"]
 
     def __init__(self) -> None:
         path = Path.home() / "storage" / "downloads"
