@@ -26,6 +26,10 @@ class MusicPlayer:
     def play(self) -> None:
         if not self.test_dir.is_dir():
             return
+        text = "The volume has changed"
+        run(["termux-notification-remove", text])
+        run(["termux-notification", "-c", text, "-i", text])
+        sleep(1)
         self.volume(8)
         run([self.PLAYER_CMD, "play", self.file])
 
