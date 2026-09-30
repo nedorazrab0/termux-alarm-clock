@@ -35,7 +35,6 @@ class MusicPlayer:
                 "-i", text, "--on-delete", " ".join(self.STOP_CMD)
             ]
         )
-        sleep(1)
         self.volume(8)
         run([self.PLAYER_CMD, "play", self.file])
 
