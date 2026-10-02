@@ -25,27 +25,30 @@ class MusicPlayer:
         # Random KeyboardInterrupt protection
         self.test_dir.mkdir(exist_ok=True)
 
-    def play(self) -> None:
-        if not self.test_dir.is_dir():
-            return
-        text = "The volume has changed"
-        run(["termux-notification-remove", text])
-        run(
-            [
-                "termux-notification",
-                "-t", text,
-                "-i", text,
-                "--on-delete", " ".join(self.STOP_CMD)
-            ]
-        )
-        self.volume(8)
-        run([self.PLAYER_CMD, "play", self.file])
-
     def stop(self) -> None:
         run(self.STOP_CMD)
 
     def volume(self, level: int) -> None:
         run(["termux-volume", "music", str(level)])
+
+    def play(self) -> None:
+        if not self.test_dir.is_dir():
+            return
+        notify("The volume has changed", join(self.STOP_CMD))
+        self.volume(8)
+        run([self.PLAYER_CMD, "play", self.file])
+
+    @staticmethod
+    def notify(text: str, on_delete: str) -> None:
+        run(["termux-notification-remove", text])
+        run(
+            [
+                "termux-notification",
+                "-i", text,
+                "-t", text,
+                "--on-delete", on_delete
+            ]
+        )
 
 
 signal(SIGINT, SIG_IGN)
