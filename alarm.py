@@ -63,7 +63,7 @@ def vibrate_random(repeats: int) -> None:
         sleep(duration/1000 + 0.2)
 
 
-def notify(minutes: int, seconds: int) -> None:
+def info(minutes: int, seconds: int) -> None:
     run(["termux-dialog", "confirm", "-t", str(minutes)], check=True)
     print("\033[2J\033[H")
     print(f"{minutes} min " * 4)
@@ -86,7 +86,7 @@ def main() -> None:
     seconds = minutes*60
     run(["termux-wake-lock"], check=True)
     try:
-        notify(minutes, seconds)
+        info(minutes, seconds)
         sleep(seconds)
         alarm()
         music.stop()
