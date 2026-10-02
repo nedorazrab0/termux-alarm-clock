@@ -68,7 +68,7 @@ def notify(minutes: int, seconds: int) -> None:
     print(f"{minutes} min " * 4)
     print(ctime(time() + seconds))
     print(f"PID: {getpid()}")
-    vibrate(900)
+    vibrate(1000)
 
 
 def alarm() -> None:
