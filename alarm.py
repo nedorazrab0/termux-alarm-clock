@@ -34,19 +34,19 @@ class MusicPlayer:
     def play(self) -> None:
         if not self.test_dir.is_dir():
             return
-        notify("The volume has changed", join(self.STOP_CMD))
+        notify("The volume has changed", self.STOP_CMD)
         self.volume(8)
         run([self.PLAYER_CMD, "play", self.file])
 
     @staticmethod
-    def notify(text: str, on_delete: str) -> None:
+    def notify(text: str, on_delete: list) -> None:
         run(["termux-notification-remove", text])
         run(
             [
                 "termux-notification",
                 "-i", text,
                 "-t", text,
-                "--on-delete", on_delete
+                "--on-delete", join(on_delete)
             ]
         )
 
