@@ -32,7 +32,7 @@ class MusicPlayer:
         run(
             [
                 "termux-notification",
-                "-t", text, 
+                "-t", text,
                 "-i", text,
                 "--on-delete", " ".join(self.STOP_CMD)
             ]
