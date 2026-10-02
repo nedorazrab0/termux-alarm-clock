@@ -56,7 +56,7 @@ def vibrate(duration: int) -> None:
 
 
 def vibrate_random(repeats: int) -> None:
-    durations = choices(range(100, 901, 200), k=repeats)
+    durations = choices(range(100, 1001, 100), k=repeats)
     for duration in durations:
         vibrate(duration)
         sleep(duration/1000 + 0.2)
