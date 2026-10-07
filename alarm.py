@@ -32,14 +32,13 @@ class MusicPlayer:
 
     def notify(self, text: str) -> None:
         run(["termux-notification-remove", text])
-        run(
-            [
-                "termux-notification",
-                "-i", text,
-                "-t", text,
-                "--on-delete", join(self.STOP_CMD)
-            ]
-        )
+        cmd = [
+            "termux-notification",
+            "-i", text,
+            "-t", text,
+            "--on-delete", join(self.STOP_CMD)
+        ]
+        run(cmd)
 
     def play(self) -> None:
         # Do not play music if the dir is missing
