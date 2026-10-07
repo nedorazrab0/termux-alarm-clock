@@ -22,7 +22,6 @@ class MusicPlayer:
 
         if not self.file.exists():
             raise FileNotFoundError(f"Place your music file at {self.file}")
-        # Random KeyboardInterrupt protection
         self.test_dir.mkdir(exist_ok=True)
 
     def stop(self) -> None:
@@ -43,6 +42,7 @@ class MusicPlayer:
         )
 
     def play(self) -> None:
+        # Do not play music if the dir is missing
         if not self.test_dir.is_dir():
             return
         self.notify("The volume has changed")
@@ -50,6 +50,7 @@ class MusicPlayer:
         run([self.PLAYER_CMD, "play", self.file])
 
 
+# Random KeyboardInterrupt protection
 signal(SIGINT, SIG_IGN)
 music = MusicPlayer()
 
