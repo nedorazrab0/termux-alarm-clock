@@ -59,10 +59,11 @@ def vibrate(duration: int) -> None:
 
 
 def vibrate_random(repeats: int) -> None:
-    durations = choices(range(100, 1001, 100), k=repeats)
-    for duration in durations:
-        vibrate(duration)
-        sleep(duration/1000 + 0.2)
+    intervals = (0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 0.9, 1.0)
+    random_intervals = choices(intervals, k=repeats)
+    for interval in random_intervals:
+        vibrate(1000)
+        sleep(interval + 1)
 
 
 def info(minutes: int, seconds: int) -> None:
@@ -78,7 +79,7 @@ def alarm() -> None:
     print("Wake up")
     vibrate_random(64)
     music.play()
-    vibrate_random(64)
+    vibrate_random(128)
 
 
 def main() -> None:
