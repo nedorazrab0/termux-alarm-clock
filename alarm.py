@@ -54,16 +54,18 @@ signal(SIGINT, SIG_IGN)
 music = MusicPlayer()
 
 
-def vibrate(duration: int) -> None:
-    Popen(["termux-vibrate", "-f", "-d", str(duration)])
+def vibrate(duration: float = 1.0) -> float:
+    cmd_duration = str(int(duration*1000))
+    Popen(["termux-vibrate", "-f", "-d", cmd_duration])
+    return duration
 
 
 def vibrate_random(repeats: int) -> None:
     intervals = (0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 0.9, 1.0)
     random_intervals = choices(intervals, k=repeats)
     for interval in random_intervals:
-        vibrate(1000)
-        sleep(interval + 1)
+        duration = vibrate()
+        sleep(interval + duration)
 
 
 def info(minutes: int, seconds: int) -> None:
@@ -72,7 +74,7 @@ def info(minutes: int, seconds: int) -> None:
     print(f"{minutes} min " * 4)
     print(ctime(time() + seconds))
     print(f"PID: {getpid()}")
-    vibrate(1000)
+    vibrate()
 
 
 def alarm() -> None:
