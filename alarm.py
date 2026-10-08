@@ -85,7 +85,7 @@ def alarm() -> None:
 def main() -> None:
     minutes = int(input("How many minutes until the alarm "))
     if minutes < 0 or minutes > 540:
-        raise ValueError
+        raise ValueError("A misclick?")
     seconds = minutes*60
     run(["termux-wake-lock"], check=True)
     try:
