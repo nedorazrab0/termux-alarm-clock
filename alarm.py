@@ -43,6 +43,7 @@ class MusicPlayer:
     def play(self) -> None:
         # Do not play music if the dir is missing
         if not self.test_dir.is_dir():
+            sleep(1)
             return
         self.notify("The volume has changed")
         self.volume(12)
