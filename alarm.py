@@ -45,7 +45,7 @@ class MusicPlayer:
         if not self.test_dir.is_dir():
             return
         self.notify("The volume has changed")
-        self.volume(8)
+        self.volume(12)
         run([self.PLAYER_CMD, "play", self.file])
 
 
