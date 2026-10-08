@@ -18,7 +18,7 @@ class MusicPlayer:
     def __init__(self) -> None:
         path = Path.home() / "storage" / "downloads"
         self.test_dir = path / "00-termux-alarm-clock"
-        self.file = path / "alarm.ogg"
+        self.file = path / "alarm.m4a"
 
         if not self.file.exists():
             raise FileNotFoundError(f"Place your music file at {self.file}")
