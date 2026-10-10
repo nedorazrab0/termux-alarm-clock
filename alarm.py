@@ -80,14 +80,14 @@ def info(minutes: int, seconds: int) -> None:
 
 def alarm() -> None:
     print("Wake up")
-    vibrate_random(64)
+    vibrate_random(32)
     music.play()
-    vibrate_random(128)
+    vibrate_random(32)
 
 
 def main() -> None:
     minutes = int(input("How many minutes until the alarm "))
-    if minutes < 0 or minutes > 540:
+    if minutes < 0 or minutes > 550:
         raise ValueError("A misclick?")
     seconds = minutes*60
     run(["termux-wake-lock"], check=True)
@@ -95,8 +95,8 @@ def main() -> None:
         info(minutes, seconds)
         sleep(seconds)
         alarm()
-        music.stop()
     finally:
+        music.stop()
         run(["termux-wake-unlock"])
 
 
