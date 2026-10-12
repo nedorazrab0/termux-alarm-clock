@@ -2,13 +2,13 @@
 # SPDX-License-Identifier: 0BSD
 """Termux alarm clock."""
 
+from time import localtime, strftime, sleep, time
+from subprocess import check_output, Popen, run
 from signal import SIG_IGN, SIGINT, signal
-from time import sleep, ctime, time
-from subprocess import Popen, run
 from random import choices
 from pathlib import Path
 from shlex import join
-from os import getpid
+from json import loads
 
 
 class MusicPlayer:
@@ -61,42 +61,55 @@ def vibrate(duration: float = 1.0) -> float:
     return duration
 
 
-def vibrate_random(repeats: int) -> None:
+def vibrate_random(k: int) -> None:
     intervals = (0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 0.9, 1.0)
-    random_intervals = choices(intervals, k=repeats)
+    random_intervals = choices(intervals, k=k)
     for interval in random_intervals:
         duration = vibrate()
         sleep(interval + duration)
 
 
-def info(minutes: int, seconds: int) -> None:
-    run(["termux-dialog", "confirm", "-t", str(minutes)], check=True)
-    print("\033[2J\033[H")
-    print(f"{minutes} min " * 4)
-    print(ctime(time() + seconds))
-    print(f"PID: {getpid()}")
-    vibrate()
-
-
 def alarm() -> None:
     print("Wake up")
-    vibrate_random(32)
+    vibrate_random(64)
     music.play()
     vibrate_random(32)
 
 
+def dialog() -> int:
+    now = time()
+    variants = []
+    cycle = 0
+    for cycle_secs in range(5400, 32401, 5400):
+        cycle += 1
+        sleep_secs = cycle_secs + 600
+        target_time = localtime(now + sleep_secs)
+        variants += [
+            strftime(f"{cycle} | %H:%M %d %h | {sleep_secs}", target_time)
+        ]
+
+    cmd_variants = ",".join(variants)
+    cmd = [
+        "termux-dialog", "radio", "-t", "How many cycles", "-v", cmd_variants
+    ]
+    output = loads(check_output(cmd, text=True))
+    text = output["text"]
+    if not text:
+        raise RuntimeWarning("Canceled")
+    print("\033[H\033[J")
+    print(text)
+    return int(text.split(" | ")[2])
+
+
 def main() -> None:
-    minutes = int(input("How many minutes until the alarm "))
-    if minutes < 0 or minutes > 550:
-        raise ValueError("A misclick?")
-    seconds = minutes*60
+    secs = dialog()
     run(["termux-wake-lock"], check=True)
     try:
-        info(minutes, seconds)
-        sleep(seconds)
+        vibrate()
+        sleep(secs)
         alarm()
-    finally:
         music.stop()
+    finally:
         run(["termux-wake-unlock"])
 
 
