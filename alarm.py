@@ -41,18 +41,13 @@ class MusicPlayer:
         run(cmd)
 
     def play(self) -> None:
-        # Do not play music if the dir is missing
+        # Remove the dir to prevent the music playing
         if not self.test_dir.is_dir():
             sleep(1)
             return
         self.notify("The volume has changed")
         self.volume(12)
         run([self.PLAYER_CMD, "play", self.file])
-
-
-# Random KeyboardInterrupt protection
-signal(SIGINT, SIG_IGN)
-music = MusicPlayer()
 
 
 def vibrate(duration: float = 1.0) -> float:
@@ -69,7 +64,7 @@ def vibrate_random(k: int) -> None:
         sleep(interval + duration)
 
 
-def alarm() -> None:
+def alarm(music: MusicPlayer) -> None:
     print("Wake up")
     vibrate_random(64)
     music.play()
@@ -102,12 +97,16 @@ def dialog() -> int:
 
 
 def main() -> None:
+    # Random KeyboardInterrupt protection
+    signal(SIGINT, SIG_IGN)
+
+    music = MusicPlayer()
     secs = dialog()
     run(["termux-wake-lock"], check=True)
     try:
         vibrate()
         sleep(secs)
-        alarm()
+        alarm(music)
         music.stop()
     finally:
         run(["termux-wake-unlock"])
