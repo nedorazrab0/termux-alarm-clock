@@ -8,7 +8,6 @@ from signal import SIG_IGN, SIGINT, signal
 from random import choices
 from pathlib import Path
 from shlex import join
-from json import loads
 
 
 class MusicPlayer:
