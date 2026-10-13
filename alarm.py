@@ -3,8 +3,8 @@
 """Termux alarm clock."""
 
 from time import localtime, strftime, sleep, time
-from subprocess import check_output, Popen, run
 from signal import SIG_IGN, SIGINT, signal
+from subprocess import Popen, run
 from random import choices
 from pathlib import Path
 from shlex import join
