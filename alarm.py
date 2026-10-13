@@ -84,7 +84,7 @@ def dialog() -> int:
         for cycle_seconds in range(min_seconds, max_seconds + 1, cycle)
     )
     for number, (label, _) in enumerate(variants):
-        print(f"{number}  {label}")
+        print(f"{number}) {label}")
     answer = int(input("Enter a number: "))
     if answer < 0:
         raise ValueError
