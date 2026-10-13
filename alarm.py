@@ -73,7 +73,7 @@ def dialog() -> int:
     fall_asleep_seconds = 600
     cycle = 5400
     min_seconds = cycle + fall_asleep_seconds
-    max_seconds = cycle*6 + fall_alseep_seconds
+    max_seconds = cycle*6 + fall_asleep_seconds
 
     now = time()
     variants = tuple(
