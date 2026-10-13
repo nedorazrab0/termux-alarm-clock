@@ -72,23 +72,27 @@ def alarm(music: MusicPlayer) -> None:
 
 
 def dialog() -> int:
+    min_cycle = 6000
+    max_cycle = 33001
+    cycle = 5400
+
     now = time()
     variants = tuple(
         (
-            strftime("%H:%M %d %h", localtime(now + cycle_seconds + 600)),
+            strftime("%H:%M %d %h", localtime(now + cycle_seconds)),
             cycle_seconds
         )
-        for cycle_seconds in range(6000, 33001, 5400)
+        for cycle_seconds in range(min_cycle, max_cycle, cycle)
     )
-    number = 0
-    for variant in variants:
-        number += 1
-        print(f"{number}) {variant[0]}")
-    answer = int(input("How many cycles: "))
-    result = variants[answer - 1]
+    for number, (label, _) in enumerate(variants):
+        print(f"{number}  {label}")
+    answer = int(input("Enter a number: "))
+    if answer < 0:
+        raise ValueError
+    label, seconds = variants[answer]
     print("\033[H\033[J")
-    print(result[0])
-    return result[1]
+    print(label)
+    return seconds
 
 
 def main() -> None:
