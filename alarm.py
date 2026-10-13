@@ -70,9 +70,10 @@ def alarm(music: MusicPlayer) -> None:
 
 
 def dialog() -> int:
-    min_cycle = 6000
-    max_cycle = 33001
+    fall_asleep_seconds = 600
     cycle = 5400
+    min_seconds = cycle + fall_asleep_seconds
+    max_seconds = cycle*6 + fall_alseep_seconds
 
     now = time()
     variants = tuple(
@@ -80,7 +81,7 @@ def dialog() -> int:
             strftime("%H:%M %d %h", localtime(now + cycle_seconds)),
             cycle_seconds
         )
-        for cycle_seconds in range(min_cycle, max_cycle, cycle)
+        for cycle_seconds in range(min_seconds, max_seconds + 1, cycle)
     )
     for number, (label, _) in enumerate(variants):
         print(f"{number}  {label}")
