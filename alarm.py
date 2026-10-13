@@ -40,7 +40,6 @@ class MusicPlayer:
         run(cmd)
 
     def play(self) -> None:
-        sleep(1)
         # Remove the dir to prevent the music playing
         if not self.test_dir.is_dir():
             return
