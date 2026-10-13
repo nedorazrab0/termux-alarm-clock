@@ -56,9 +56,9 @@ def vibrate(duration: float = 1.0) -> float:
     return duration
 
 
-def vibrate_random(k: int) -> None:
+def vibrate_random(repeats: int) -> None:
     intervals = (0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 0.9, 1.0)
-    random_intervals = choices(intervals, k=k)
+    random_intervals = choices(intervals, k=repeats)
     for interval in random_intervals:
         duration = vibrate()
         sleep(interval + duration)
@@ -73,27 +73,21 @@ def alarm(music: MusicPlayer) -> None:
 
 def dialog() -> int:
     now = time()
-    variants = []
-    cycle = 0
-    for cycle_secs in range(5400, 32401, 5400):
-        cycle += 1
-        sleep_secs = cycle_secs + 600
-        target_time = localtime(now + sleep_secs)
-        variants += [
-            strftime(f"{cycle} | %H:%M %d %h | {sleep_secs}", target_time)
-        ]
-
-    cmd_variants = ",".join(variants)
-    cmd = [
-        "termux-dialog", "radio", "-t", "How many cycles", "-v", cmd_variants
-    ]
-    output = loads(check_output(cmd, text=True))
-    text = output["text"]
-    if not text:
-        raise RuntimeWarning("Canceled")
-    print("\033[H\033[J")
-    print(text)
-    return int(text.split(" | ")[2])
+    variants = tuple(
+        (
+            strftime("%H:%M %d %h", localtime(now + cycle_seconds + 600)),
+            cycle_seconds
+        )
+        for cycle_seconds in range(6000, 33001, 5400)
+    )
+    number = 0
+    for variant in variants:
+        number += 1
+        print(f"{number}) {variant[0]}")
+    answer = int(input("How many cycles: ")) - 1
+    result = variants[answer][1]
+    print("\033[H\033[J", result)
+    return result
 
 
 def main() -> None:
@@ -101,11 +95,11 @@ def main() -> None:
     signal(SIGINT, SIG_IGN)
 
     music = MusicPlayer()
-    secs = dialog()
+    seconds = dialog()
     run(["termux-wake-lock"], check=True)
     try:
         vibrate()
-        sleep(secs)
+        sleep(seconds)
         alarm(music)
         music.stop()
     finally:
