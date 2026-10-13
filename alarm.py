@@ -84,10 +84,11 @@ def dialog() -> int:
     for variant in variants:
         number += 1
         print(f"{number}) {variant[0]}")
-    answer = int(input("How many cycles: ")) - 1
-    result = variants[answer][1]
-    print("\033[H\033[J", result)
-    return result
+    answer = int(input("How many cycles: "))
+    result = variants[answer - 1]
+    print("\033[H\033[J")
+    print(result[0])
+    return result[1]
 
 
 def main() -> None:
