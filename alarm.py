@@ -40,6 +40,7 @@ class MusicPlayer:
         run(cmd)
 
     def play(self) -> None:
+        sleep(1)
         # Remove the dir to prevent the music playing
         if not self.test_dir.is_dir():
             return
@@ -95,7 +96,7 @@ def dialog() -> int:
 
 
 def main() -> None:
-    # Random KeyboardInterrupt protection
+    signal(SIGTSTP, SIG_IGN)
     signal(SIGINT, SIG_IGN)
 
     music = MusicPlayer()
