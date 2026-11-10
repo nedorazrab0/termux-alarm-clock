@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: 0BSD
 """Termux alarm clock."""
 
+from signal import SIGTSTP, SIG_IGN, SIGINT, signal
 from time import localtime, strftime, sleep, time
-from signal import SIG_IGN, SIGINT, signal
 from subprocess import Popen, run
 from random import choices
 from pathlib import Path
